@@ -1,83 +1,60 @@
-
-#include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 
+void    swap(char *a, char *b)
+{
+    char tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
 
-int is_dup(char *str, int n)
+void    print_str(char *str, int len)
+{
+    write(1, str, len);
+    write(1, "\n", 1);
+}
+
+void    sort_string(char *str)
 {
     int i = 0;
-    while(i < n)
+    int j;
+    while (str[i])
     {
-        if(str[i] == str[n])
-            return(1);
+        j = i + 1;
+        while (str[j])
+        {
+            if (str[i] > str[j])
+                swap(&str[i], &str[j]);
+            j++;
+        }
         i++;
+    }
+}
+
+void    permute(char *str, int start, int len)
+{
+    if (start == len)
+        return (print_str(str, len));
+    int i = start;
+    while (i < len)
+    {
+        sort_string(&str[start]);
+        swap(&str[start], &str[i]);
+        permute(str, start + 1, len);
+        swap(&str[start], &str[i]);
+        i++;
+    }
+}
+
+int    main(int ac, char **av)
+{
+    if (ac == 2)
+    {
+        char *str = strdup(av[1]);
+        sort_string(str);
+        permute(str, 0, strlen(av[1]));
+        free(str);
     }
     return (0);
-}
-
-int ft_strlen(char *str)
-{
-    if(!str)
-        return(0);
-    int i = 0;
-    while(str[i])
-        i++;
-    return(i);
-}
-
-void    permutations(char *str, char *buffer, int i, int size)
-{
-    if(i == size)
-    {
-        printf("%s\n", buffer);
-        return;
-    }
-    int j = 0;
-    while(j < size)
-    {
-        if(str[j] != '\0')
-        {
-            buffer[i] = str[j];
-            str[j] = '\0';
-            permutations(str, buffer, i + 1, size);
-            str[j] = buffer[i];
-        }
-        j++;
-    }
-
-}
-
-char *get_str(char *str, int len)
-{
-    char *new;
-
-    new = malloc(len + 1);
-    int i = 0;
-    while(str[i])
-    {
-        if(is_dup(str, i))
-            return(printf("error\n"), free(new), NULL);
-        new[i] = str[i];
-        i++;
-    }
-    new[i] = 0;
-    return(new);
-}
-
-int main(int ac , char **av)
-{
-
-    if(ac != 2)
-        return (1);
-    int len = ft_strlen(av[1]);
-    char *arg = get_str(av[1], len);
-    if(!arg)
-        return (1);
-    char *buffer = malloc(len + 1);
-    buffer[len] = 0;
-    permutations(arg, buffer, 0, len);
-    free(buffer);
-    free(arg);
-    return(0);
 }

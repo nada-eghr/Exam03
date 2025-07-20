@@ -38,7 +38,7 @@ void    ft_backtrack(char *str, int changes, int pos)
         if(str[i] == ')' || str[i] == '(')
         {
             char c = str[i];
-            str[i] = '_';
+            str[i] = ' ';
             ft_backtrack(str, changes + 1, i + 1);
             str[i] = c;
         }
