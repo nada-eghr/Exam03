@@ -1,66 +1,52 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
 
-void	print_set(int *power_set, int size)
+void print_set(int *tab , int size)
 {
-	int	i;
+    int i = 0;
+    while ( i < size)
+    {
+        printf("%d", tab[i]);
+        i++;
+        if ( i < size)
+            printf(" ");
 
-	i = 0;
-	while (i < size)
-	{
-		fprintf(stdout, "%d", power_set[i]);
-		if (i < size - 1)
-			fprintf(stdout, " ");
-		i++;
-	}
-	fprintf(stdout, "\n");
+    }
+    printf("\n");
 }
-
-void	backtrack_powerset(int *set, int size, int target, int index, int *power_set, int size_powerset)
+void find_subset(int *tab , int size , int target , int index , int *subset , int subset_size , int current_sum)
 {
-	int	sum;
-	int	i;
-
-	if (index == size)
-	{
-		i = 0;
-		sum = 0;
-		while (i < size_powerset)
-			sum += power_set[i++];
-		if (sum == target)
-			print_set(power_set, size_powerset);
-		return ;
-	}
-	power_set[size_powerset] = set[index];
-	backtrack_powerset(set, size, target, index + 1, power_set, size_powerset + 1);
-	backtrack_powerset(set, size, target, index + 1, power_set, size_powerset);
+    if (size == index)
+    {
+        if (target == current_sum)
+            print_set(subset, subset_size);
+        return ;
+    }
+    find_subset(tab , size , target , index +  1  ,subset , subset_size, current_sum );
+    subset[subset_size] = tab[index];
+    find_subset(tab , size , target , index +  1  ,subset , subset_size + 1, current_sum  + tab[index]);
 }
-
-int	main(int ac, char **av)
+void powerset(int *tab , int size , int target)
 {
-	int	*set;
-	int	*power_set;
-	int	size;
-	int	target;
-	int	i;
-
-	if (ac < 3)
-		return (1);
-	target = atoi(av[1]);
-	size = ac - 2;
-	set = malloc(size * sizeof(int));
-	if (!set)
-		return (1);
-	power_set = malloc(size * sizeof(int));
-	if (!power_set)
-		return (1);
-	i = -1;
-	while (++i < size)
-		set[i] = atoi(av[i + 2]);
-	backtrack_powerset(set, size, target, 0, power_set, 0);
-	free(set);
-	free(power_set);
-	return (0);
+    int *subset = malloc(sizeof(int) * size);
+    find_subset(tab, size , target , 0, subset , 0 ,0);
+    free(subset);
+}
+int main(int ac , char **av)
+{
+    if ( ac < 3)
+        return 1;
+    int target = atoi(av[1]);
+    int n = ac -2;
+    int *tab = malloc(sizeof(int) * n);
+    int i = 0;
+    while ( i < n)
+    {
+        tab[i] = atoi(av[i+ 2]);
+        i++;
+    }
+    powerset(tab , n , target);
+    free(tab);
+    return 0;
 }
